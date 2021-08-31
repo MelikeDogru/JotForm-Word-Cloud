@@ -11,34 +11,58 @@ const Submissions = () => {
 
     const jotform = window.JF;
     const [formId, setFormId] = useState('');
+    const [submissionslist, setSubmissionsList] = useState([]);
     let history = useHistory();
     const params = useParams();
-    console.log(params.formid);
     const initialapikey = localStorage.getItem('apikey');
     const [apikey, setApikey] = useState(initialapikey === "null" ? null : initialapikey);
 
+    //initialize apikey to get submissions
     useEffect(() => {
         if (apikey !== null) {
-            jotform.initialize({ apiKey: apikey });   
+            jotform.initialize({ apiKey: apikey });
         }
     }, []);
-    
 
+    //get form id to obtain submissions
     useEffect(() => {
         setFormId(params.formid);
     }, []);
 
-
+    //sbfunction for getFormSubmissions function
     const submission = (response) => {
+        setSubmissionsList(response);
+        console.log(response);
+        //console.log(response[1].answers);
         for (var i = 0; i < response.length; i++) {
             console.log(response[i].answers)
-            //document.write(response[i].answers);
         }
     }
 
+    //api function get form submissions
     useEffect(() => {
         jotform.getFormSubmissions(formId, submission);
-    });
+    }, [formId]);
+
+    //onClick for card 
+    const cardClick = (data) => {
+        
+    }
+
+    //rendering submissions as a card item
+    const renderCard = (card, index) => {
+        return (
+            <Card style={{ width: '18rem' }} key={index}>
+                <Card.Body>
+                    <Card.Title>{card.id}</Card.Title>
+                    <Card.Text>
+                        {card.id}
+                    </Card.Text>
+                    <Button variant="dark" onClick={() => cardClick(card.id)}>Button</Button>
+                </Card.Body>
+            </Card>
+        )
+    }
 
 
     return (
@@ -52,7 +76,10 @@ const Submissions = () => {
                         <Col xs={8}>
                             <Card border="secondary" className="text-center">
                                 <Card.Body>
-                                    <Card.Title>submissions</Card.Title>
+                                    <Card.Title>Submissions</Card.Title>
+                                    <div>
+                                        {submissionslist.map(renderCard)}
+                                    </div>
                                 </Card.Body>
                                 <Card.Text>{formId}</Card.Text>
                             </Card>
