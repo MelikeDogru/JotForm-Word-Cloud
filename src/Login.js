@@ -69,7 +69,7 @@ function Login() {
 
     return (
         <div className="Login" >
-            <Header />
+            <Header login={false}/>
             <div className="main-conteiner">
                 <Container>
                     <Row style={{ marginTop: "100px" }}>

@@ -10,6 +10,7 @@ const Submissions = () => {
 
     const jotform = window.JF;
     const [formId, setFormId] = useState('');
+    const [username, setUsername] = useState('');
     const [submissionslist, setSubmissionsList] = useState([]);
     const params = useParams();
     const initialapikey = localStorage.getItem('apikey');
@@ -113,7 +114,13 @@ const Submissions = () => {
     //api function get form submissions
     useEffect(() => {
         jotform.getFormSubmissions(formId, submission);
+        jotform.getUser(getuser);
     }, [formId]);
+
+    const getuser = (resp) => {
+        console.log(resp);
+        setUsername(resp.name);
+    }
 
 
     //onClick for card 
@@ -140,7 +147,7 @@ const Submissions = () => {
 
     return (
         <div className="Submissions">
-            <Header />
+            <Header login={true} name={username}/>
             <div className="">
                 <Container>
                     <Row style={{ marginTop: "100px", marginBottom: "100px" }}>
