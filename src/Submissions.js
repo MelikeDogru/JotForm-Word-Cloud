@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-grid.css';
-import { Button, Container, Row, Col, Form, ListGroup, Card } from 'react-bootstrap';
+import { Button, Container, Row, Col, Card } from 'react-bootstrap';
 import Header from './components/Header';
-import ReactWordcloud from 'react-wordcloud';
 import WordCloud from './WordCloud'
 
 const Submissions = () => {
@@ -12,21 +11,18 @@ const Submissions = () => {
     const jotform = window.JF;
     const [formId, setFormId] = useState('');
     const [submissionslist, setSubmissionsList] = useState([]);
-    let history = useHistory();
     const params = useParams();
     const initialapikey = localStorage.getItem('apikey');
     const [apikey, setApikey] = useState(initialapikey === "null" ? null : initialapikey);
     const [submissionsText, setSubmissionsText] = useState('');
-    const [cleanText, setCleanText] = useState('');
     const [submissionsArray, setSubmissionsArray] = useState([]);
-    const [tempCleanArray, setTempCleanArray] = useState([]);
 
     const controlArray = [
         { type: 'control_head', text: 'false' },
         { type: 'control_button', text: 'false' },
         { type: 'control_fullname', text: 'prettyFormat' },
-        { type: 'control_email', text: 'answer' },
-        { type: 'control_address', text: 'prettyFormat' },
+        { type: 'control_email', text: 'false' },
+        { type: 'control_address', text: 'false' },
         { type: 'control_phone', text: 'false' },
         { type: 'control_datetime', text: 'false' },
         { type: 'control_appointment', text: 'false' },
@@ -50,8 +46,6 @@ const Submissions = () => {
         { type: 'control_scale', text: 'false' },
         { type: 'control_divider', text: 'false' }
     ]
-
-    //console.log(controlArray[0].type);
 
     const words = [
         {
@@ -113,48 +107,19 @@ const Submissions = () => {
     //get text of submissions, convert submissions array to string
     useEffect(() => {
         setSubmissionsText(submissionsArray.join(' '));
-        //removeStopwords(submissionsText);
     }, [submissionsArray])
 
-    /*
-    useEffect(() => {
-        const sss = "you you are my helloo"
-        //removeStopwords(submissionsText);
-        removeStopwords(sss);
-        console.log(cleanText);
-    }, [submissionsText]) */
-
-    //Clean stop words
-    /*
-    const removeStopwords = (str) => {
-        const words = str.split(' ');
-        console.log(words);
-        for (var i = 0; i < words.length; i++) {
-            const word_clean = words[i];
-            console.log(word_clean);
-            if (!stopwords.includes(word_clean)) {
-                console.log(word_clean);
-                setTempCleanArray(tempCleanArray => [...tempCleanArray, word_clean]);
-            }
-        }
-        setCleanText(tempCleanArray.join(' '));
-        console.log(str);
-        console.log("remove");
-    }*/
 
     //api function get form submissions
     useEffect(() => {
         jotform.getFormSubmissions(formId, submission);
     }, [formId]);
 
-    
+
     //onClick for card 
     const cardClick = (data) => {
         console.log(submissionsText);
         console.log(submissionsArray);
-        console.log(cleanText);
-        //var str = submissionsArray.join(' ');
-        //console.log(str);
     }
 
     //rendering submissions as a card item
@@ -184,14 +149,13 @@ const Submissions = () => {
                         <Col xs={8}>
                             <Card border="secondary" className="text-center">
                                 <Card.Body>
-                                    <Card.Title>Submissions</Card.Title>
+                                    <Card.Title>Word Cloud of Submissions</Card.Title>
+                                    {/*
                                     <div>
                                         {submissionslist.map(renderCard)}
-                                    </div>
+                                    </div> */}
                                     <WordCloud data={submissionsText} />
-                                    {/*<ReactWordcloud words={words} />*/}
                                 </Card.Body>
-                                <Card.Text>{cleanText}</Card.Text>
                             </Card>
                         </Col>
                         <Col></Col>
