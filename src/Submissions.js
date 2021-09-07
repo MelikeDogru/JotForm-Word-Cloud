@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from "react-router-dom";
+import { exportComponentAsJPEG, exportComponentAsPDF, exportComponentAsPNG } from 'react-component-export-image';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-grid.css';
 import { Button, Container, Row, Col, Card } from 'react-bootstrap';
@@ -147,7 +148,7 @@ const Submissions = () => {
 
     return (
         <div className="Submissions">
-            <Header login={true} name={username}/>
+            <Header login={true} name={username} />
             <div className="">
                 <Container>
                     <Row style={{ marginTop: "100px", marginBottom: "100px" }}>
@@ -156,12 +157,13 @@ const Submissions = () => {
                         <Col xs={8}>
                             <Card border="secondary" className="text-center">
                                 <Card.Body>
-                                    <Card.Title>Word Cloud of Submissions</Card.Title>
+                                    <Card.Title style={{marginBottom: "10px"}}>Word Cloud of Submissions</Card.Title>
                                     {/*
                                     <div>
                                         {submissionslist.map(renderCard)}
                                     </div> */}
                                     <WordCloud data={submissionsText} />
+                                    
                                 </Card.Body>
                             </Card>
                         </Col>

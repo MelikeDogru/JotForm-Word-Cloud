@@ -1,8 +1,20 @@
 import React from 'react';
 import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
+import { useHistory } from "react-router-dom";
 
 
 const Header = (props) => {
+
+    let history = useHistory();
+    const jotform = window.JF;
+
+    const logoutClick = () => {
+        console.log("logout");
+        jotform.logout();
+        localStorage.removeItem('apikey');
+        history.push('/');
+    }
+
     return (
         <div>
             <Navbar bg="dark" expand="lg" variant="dark">
@@ -15,7 +27,7 @@ const Header = (props) => {
                         <Nav className="me-auto"> 
                             <Nav.Link href="/myforms">My Forms</Nav.Link>
                             <NavDropdown title={props.name} id="basic-nav-dropdown">
-                                <NavDropdown.Item href="#action/3.4">Logout</NavDropdown.Item>
+                                <NavDropdown.Item onClick={logoutClick}>Logout</NavDropdown.Item>
                             </NavDropdown>
                         </Nav> :  <Nav></Nav>}
                     </div>
