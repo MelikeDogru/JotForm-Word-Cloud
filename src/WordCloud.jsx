@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { exportComponentAsJPEG, exportComponentAsPDF, exportComponentAsPNG } from 'react-component-export-image';
-import { Button, Container, Row, Col, Card } from 'react-bootstrap';
+import { Button, Container, Row, Col, Card, Modal, Tooltip, OverlayTrigger, Accordion, Collapse } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-grid.css';
 import ReactWordcloud from 'react-wordcloud';
@@ -10,6 +10,7 @@ import { Resizable } from "re-resizable";
 import html2canvas from 'html2canvas';
 import { decode as base64_decode, encode as base64_encode } from 'base-64';
 import Options from './Options';
+import OptionsAccordion from './OptionsAccordion';
 
 const WordCloud = (props) => {
 
@@ -18,6 +19,10 @@ const WordCloud = (props) => {
     const [cleanText, setCleanText] = useState('');
     const [wordsArray, setWordsArray] = useState([]);
     const componentRef = useRef();
+    const [embedButtonString, setEmbedButtonString] = useState('</> Embed Code');
+    const [showEmbedCodeModel, setShowEmbedCodeModel] = useState(false);
+    const [embedCode, setEmbedCode] = useState('');
+    const [open, setOpen] = useState(false);
 
 
     const stopwords = ['would', 'i', 'me', 'my', 'myself', 'we', 'we\'re', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now'];
@@ -40,7 +45,7 @@ const WordCloud = (props) => {
         const map = tempCleanArray.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
         const arr = [...map].map(([text, value]) => ({ text, value }))
         setWordsArray(arr);
-       //console.log(arr);
+        //console.log(arr);
     }
 
     useEffect(() => {
@@ -62,7 +67,7 @@ const WordCloud = (props) => {
     const intialoptions = {
         colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"],
         enableTooltip: true,
-        deterministic: false,
+        deterministic: true,
         fontFamily: "times new roman",
         fontSizes: [15, 90],
         fontStyle: "normal",
@@ -90,6 +95,10 @@ const WordCloud = (props) => {
         background: "#f0f0f0"
     };
 
+    const renderTooltips = (props) => (
+        <Tooltip {...props}>Use this code in order to embed your word cloud in an iFrame within your page.</Tooltip>
+    );
+
     //For Embed code
     const exportAsPicture = () => {
         var html = document.getElementsByTagName('HTML')[0]
@@ -113,6 +122,7 @@ const WordCloud = (props) => {
         html2canvas(data).then((canvas) => {
             var image = canvas.toDataURL('image/png', 0.5);
             console.log(image);
+            setEmbedCode("<iframe id=\"JotformWordCloud\" width=\"600\" height=\"400\" src=\"" + image + "\"></iframe>");
             //let encoded = base64_encode(image);
             //console.log(encoded);
             return image
@@ -123,6 +133,42 @@ const WordCloud = (props) => {
         })
     }
 
+    const handleClose = () => {
+        setShowEmbedCodeModel(false);
+    }
+    const handleShow = () => {
+        exportAsPicture();
+        setShowEmbedCodeModel(true);
+    }
+    const handleCompyEmbedCode = () => {
+        navigator.clipboard.writeText(embedCode);
+        setShowEmbedCodeModel(false);
+    }
+
+    const embedCodeModal = (
+        <Modal show={showEmbedCodeModel} onHide={handleClose} centered scrollable>
+            <Modal.Header closeButton>
+                <Modal.Title>IFRAME</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{embedCode}</Modal.Body>
+            {console.log(embedCode)}
+            <Modal.Footer>
+                <Button size="sm" variant="secondary" onClick={handleClose}>
+                    Close
+                </Button>
+                <Button size="sm" variant="dark" onClick={handleCompyEmbedCode}>
+                    Copy Code
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+    
+
+    const handleRefresh = () => {
+        setOptions(intialoptions);
+    }
+
+
 
     return (
         <div>
@@ -130,13 +176,26 @@ const WordCloud = (props) => {
             <div id="exportContainer" ref={componentRef} style={{ width: "100%", height: "100%", marginTop: "5px" }}>
                 <ReactWordcloud words={wordsArray} callbacks={callbacks} options={options} />
             </div>
-            <div style={{marginTop:"5px"}}>
+            <Accordion style={{ marginTop: "15px", marginBottom: "15px" }}>
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>Change the Design of Word Cloud</Accordion.Header>
+                    <Accordion.Body>
+                        <OptionsAccordion options={options} onApply={setOptions} />
+                        <Button style={{ marginTop: "5px" }} size="sm" variant="secondary" onClick={handleRefresh}>
+                            Cancel
+                        </Button>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+            <div style={{ marginTop: "5px" }}>
                 <Row>
+                    {/*
                     <Col>
                         <Options options={options} onApply={setOptions} />
-                    </Col>
+                    </Col> */}
                     <Col>
-                        <Button size="sm" style={{ marginLeft: "0px" }} variant="dark" onClick={exportAsPicture}>Get URL</Button>
+                        <Button size="sm" style={{ marginLeft: "0px" }} variant="dark" onClick={handleShow}>{embedButtonString}</Button>
+                        {embedCodeModal}
                     </Col>
                     <Col>
                         <Button size="sm" style={{ marginLeft: "0px" }} variant="dark" onClick={() => exportComponentAsJPEG(componentRef)}>Save as JPEG</Button>
@@ -146,6 +205,7 @@ const WordCloud = (props) => {
                     </Col>
                 </Row>
             </div>
+
             {/* </Resizable> */}
         </div>
 
