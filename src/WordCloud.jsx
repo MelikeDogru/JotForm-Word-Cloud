@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { exportComponentAsJPEG, exportComponentAsPDF, exportComponentAsPNG } from 'react-component-export-image';
 import { Button, Container, Row, Col, Card, Modal, Tooltip, OverlayTrigger, Accordion, Collapse } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -11,6 +11,7 @@ import html2canvas from 'html2canvas';
 import { decode as base64_decode, encode as base64_encode } from 'base-64';
 import Options from './Options';
 import OptionsAccordion from './OptionsAccordion';
+import { v4 as uuidv4 } from 'uuid';
 
 const WordCloud = (props) => {
 
@@ -23,6 +24,7 @@ const WordCloud = (props) => {
     const [showEmbedCodeModel, setShowEmbedCodeModel] = useState(false);
     const [embedCode, setEmbedCode] = useState('');
     const [open, setOpen] = useState(false);
+    const [randomSeed, setRandomSeed] = useState(uuidv4());
 
 
     const stopwords = ['would', 'i', 'me', 'my', 'myself', 'we', 'we\'re', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now'];
@@ -45,12 +47,10 @@ const WordCloud = (props) => {
         const map = tempCleanArray.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
         const arr = [...map].map(([text, value]) => ({ text, value }))
         setWordsArray(arr);
-        //console.log(arr);
     }
 
     useEffect(() => {
         setSubmissions(props.data);
-        //console.log(props.data);
         removeStopwords(submissions);
     }, [props.data]);
 
@@ -151,7 +151,6 @@ const WordCloud = (props) => {
                 <Modal.Title>IFRAME</Modal.Title>
             </Modal.Header>
             <Modal.Body>{embedCode}</Modal.Body>
-            {console.log(embedCode)}
             <Modal.Footer>
                 <Button size="sm" variant="secondary" onClick={handleClose}>
                     Close
@@ -162,28 +161,42 @@ const WordCloud = (props) => {
             </Modal.Footer>
         </Modal>
     );
-    
+
 
     const handleRefresh = () => {
         setOptions(intialoptions);
     }
 
+    const wordcloudOptions = useMemo(
+        () => ({
+            ...options,
+            randomSeed,
+        }),
+        [options, randomSeed],
+    );
+
+    function handleAnimate() {
+        setRandomSeed(uuidv4());
+    }
 
 
     return (
         <div>
-            {/*<Resizable defaultSize={{ width: 600, height: 400 }} style={resizeStyle}> */}
             <div id="exportContainer" ref={componentRef} style={{ width: "100%", height: "100%", marginTop: "5px" }}>
-                <ReactWordcloud words={wordsArray} callbacks={callbacks} options={options} />
+                <ReactWordcloud words={wordsArray} callbacks={callbacks} options={wordcloudOptions} />
             </div>
             <Accordion style={{ marginTop: "15px", marginBottom: "15px" }}>
                 <Accordion.Item eventKey="0">
-                    <Accordion.Header>Change the Design of Word Cloud</Accordion.Header>
+                    <Accordion.Header style={{ color: "#262626" }}>Change the Design of Word Cloud</Accordion.Header>
                     <Accordion.Body>
                         <OptionsAccordion options={options} onApply={setOptions} />
-                        <Button style={{ marginTop: "5px" }} size="sm" variant="secondary" onClick={handleRefresh}>
-                            Cancel
+                        <Button style={{ marginTop: "5px" }} size="sm" variant="secondary" onClick={handleAnimate}>
+                            Relocate the Words
                         </Button>
+                        <Button style={{ marginTop: "5px", marginLeft: "7px" }} size="sm" variant="secondary" onClick={handleRefresh}>
+                            Reload the First Settings
+                        </Button>
+
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>
@@ -205,8 +218,6 @@ const WordCloud = (props) => {
                     </Col>
                 </Row>
             </div>
-
-            {/* </Resizable> */}
         </div>
 
     );
