@@ -77,32 +77,13 @@ function Login() {
                         <Col xs={8}>
                             <Card border="secondary" className="text-center">
                                 <Card.Body>
-                                    <Card.Title>Welcome to JotForm Word Cloud Tool!</Card.Title>
+                                    <Card.Title>Welcome to JotForm Word Cloud!</Card.Title>
                                     <Card.Text>
                                         You need to login and give permission of the access before start to use this tool.
                                     </Card.Text>
                                     <Button variant="dark" onClick={loginOnclick} >
                                         Login
                                     </Button>
-                                    {/*
-                                    <div>
-                                        {loginState ?
-                                            <Button variant="dark" onClick={direct} >
-                                                Login
-                                            </Button> : <Button variant="dark" onClick={loginOnclick} >
-                                                Login
-                                            </Button>}
-                                        </div> */}
-                                    {/*
-                                    <Button variant="dark" onClick={loginOnclick} >
-                                        Login
-                                    </Button>
-                                    <Button variant="dark" onClick={onclick} style={{ marginLeft: "5px" }} onClick={getsub} >
-                                        get submission
-                                    </Button>
-                                    {loginState ? <Button>Truee</Button> : <Button>false</Button>} 
-                                   */}
-
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -110,13 +91,7 @@ function Login() {
                     </Row>
                 </Container>
             </div>
-            {/*}
-            <div className="invisible" style={{ height:"0px"}}>
-                <MyForms data={state.res}/>
-                                </div> */}
         </div>
-
-
     );
 
 }

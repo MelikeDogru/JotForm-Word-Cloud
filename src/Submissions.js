@@ -171,10 +171,7 @@ const Submissions = () => {
                     </Row>
                 </Container>
             </div>
-
         </div>
-
-
     );
 }
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Figure, Form, Row, Col } from 'react-bootstrap';
-import { SketchPicker } from 'react-color';
-import RangeSlider from 'react-bootstrap-range-slider';
+
 
 function Options({ options, onApply }) {
 

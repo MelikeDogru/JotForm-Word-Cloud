@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Figure, Form, Row, Col, ButtonGroup, Table } from 'react-bootstrap';
-import { SketchPicker } from 'react-color';
-import RangeSlider from 'react-bootstrap-range-slider';
 
 function OptionsAccordion({ options, onApply }) {
 
@@ -41,28 +39,19 @@ function OptionsAccordion({ options, onApply }) {
     }
 
     const handleUpdateColorArray = (value, index) => {
-        //setColorArray(options.colors);
-        //console.log(colorArray);
         colorArray[index] = value;
-        //console.log(colorArray);
         setColorArray(colorArray);
         handleUpdateOptions('colors', colorArray);
     }
 
-
-
     const addColor = () => {
-        //setColorArray(colorArray => [...colorArray, "#1f77b4"]);
         colorArray.push("#080808");
         handleUpdateOptions('colors', colorArray);
-        //console.log(colorArray);
     }
 
     const removeColor = () => {
-        //setColorArray(colorArray => [...colorArray, "#1f77b4"]);
         colorArray.pop();
         handleUpdateOptions('colors', colorArray);
-        //console.log(colorArray);
     }
 
     const renderColors = (color, index) => {
